@@ -8,7 +8,7 @@ class PasswordTextField extends StatefulWidget {
 class _PasswordTextFieldState extends State<PasswordTextField> {
   bool _obscureText = true;
   String hintText = '';
-  IconData icon=Icons.lock;
+  IconData icon = Icons.lock;
 
   @override
   Widget build(BuildContext context) {
@@ -18,12 +18,12 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
         obscureText: _obscureText,
         decoration: InputDecoration(
           enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.grey.shade400),
+              borderRadius: BorderRadius.circular(15.0)),
+          labelText: 'Password',
+          focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(color: Colors.grey.shade400),
           ),
-           labelText: 'Password',
-          focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.grey.shade400),
-              borderRadius: BorderRadius.circular(1.0)),
           fillColor: Colors.grey.shade100,
           filled: true,
           hintText: hintText,

@@ -22,12 +22,12 @@ class My_text_filed extends StatelessWidget {
           obscureText: obsecureText,
           decoration: InputDecoration(
             enabledBorder: OutlineInputBorder(
+                borderSide: BorderSide(color: Colors.grey.shade400),
+                borderRadius: BorderRadius.circular(15.0)),
+            labelText: hintText,
+            focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(color: Colors.grey.shade400),
             ),
-               labelText: hintText,
-            focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey.shade400),
-                borderRadius: BorderRadius.circular(1.0)),
             fillColor: Colors.grey.shade100,
             filled: true,
             hintStyle: TextStyle(color: Colors.grey[350]),

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 class My_button extends StatelessWidget {
   final Function()? onTap;
-  const My_button({super.key, required this.onTap});
+  final String text;
+  const My_button({super.key, required this.onTap, required this.text});
 
   @override
   Widget build(BuildContext context) {
@@ -14,14 +15,12 @@ class My_button extends StatelessWidget {
           decoration: BoxDecoration(
               color: Color.fromARGB(255, 30, 65, 239),
               borderRadius: BorderRadius.circular(25)),
-          child: const Center(
+          child: Center(
               child: Text(
-            'LOGIN',
+            text,
             style: TextStyle(
-                color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-          )
-          )
-          ),
+                color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+          ))),
     );
   }
 }
