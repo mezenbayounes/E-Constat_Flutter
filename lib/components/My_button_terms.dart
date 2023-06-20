@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class My_Button_Setting extends StatelessWidget {
+class My_Button_terms extends StatelessWidget {
   final Function()? onTap;
   final IconData icon;
   final String text;
 
-  const My_Button_Setting(
+  const My_Button_terms(
       {Key? key, required this.onTap, required this.text, required this.icon})
       : super(key: key);
 
@@ -21,14 +21,14 @@ class My_Button_Setting extends StatelessWidget {
           children: [
             Text(
               text,
-              style: const TextStyle(
-                color: Color.fromARGB(255, 0, 0, 0),
+              style: TextStyle(
+                color: Colors.black,
                 fontSize: 17,
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(
-                left: 200,
+                left: 160,
               ),
               child: Icon(
                 icon,

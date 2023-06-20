@@ -1,5 +1,3 @@
-class Utils {
-  //static String base_url = "http://192.168.1.29:3000/";
-
-  //static final registration = base_url + "registration";
-}
+String baseUrl = "http://192.168.1.12:3000";
+//String baseUrlWithoutHttp = "192.168.1.12:3000";
+String baseUrlWithoutHttp = "10.0.2.2:3000";
