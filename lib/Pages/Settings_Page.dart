@@ -22,7 +22,6 @@ class _SettingsPageState extends State<SettingsPage> {
   final IconData _iconLight = Icons.wb_sunny;
   final IconData _iconDark = Icons.nights_stay;
   bool iconBool = true;
- 
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +80,7 @@ class _SettingsPageState extends State<SettingsPage> {
                               onPressed: () {
                                 setState(() {
                                   iconBool = !iconBool;
-                                 
+
                                   //print(icondark.IconDL);
                                 });
                               },
@@ -317,7 +316,7 @@ class _SettingsPageState extends State<SettingsPage> {
               )
             ],
           ),
-          SizedBox(height: 265),
+          SizedBox(height: 290),
           Divider(
             color: Colors.grey[300],
             height: 0,
@@ -329,4 +328,3 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 }
-

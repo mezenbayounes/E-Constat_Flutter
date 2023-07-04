@@ -37,7 +37,11 @@ dependencies:
   shared_preferences: ^2.0.15
   sqflite: ^2.2.2
   path: ^1.8.2
- 
+
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.18.0
+  jaguar_jwt: ^3.0.0
   
 
   # The following adds the Cupertino Icons font to your application.

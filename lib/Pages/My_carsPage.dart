@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jaguar_jwt/jaguar_jwt.dart';
 
 class MyCars extends StatefulWidget {
   const MyCars({super.key});
@@ -8,6 +10,27 @@ class MyCars extends StatefulWidget {
 }
 
 class _MyCarsState extends State<MyCars> {
+  String token = "";
+  String dataUser = "";
+
+  _loadCounter() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      token = (prefs.getString('token') ?? '');
+      final parts = token.split('.');
+      final payload = parts[1];
+      dataUser = B64urlEncRfc7515.decodeUtf8(payload);
+      print(token);
+    });
+  }
+
+  @override
+  void initState() {
+//////////////
+    super.initState();
+    _loadCounter();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,8 +63,7 @@ class _MyCarsState extends State<MyCars> {
               ),
             ),
           ),
-
-          
+          Center(child: Text(dataUser)),
         ],
       ),
     );

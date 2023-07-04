@@ -1,3 +1,4 @@
+import 'package:dpc_flutter/Pages/Forgot_Password.dart';
 import 'package:dpc_flutter/Pages/menu.dart';
 import 'package:dpc_flutter/Pages/sign_up_page.dart';
 import 'package:dpc_flutter/constant/utils.dart' as utils;
@@ -20,10 +21,17 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   late String? email;
   late String? password;
+
+  late String tokenToString = "a";
   bool _obscureText = true;
 
   final formKey = GlobalKey<FormState>();
   //final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+
+  void saveData(String key, String value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(key, value);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,13 +60,13 @@ class _LoginPageState extends State<LoginPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 25.0),
                       child: TextFormField(
-                          keyboardType: TextInputType.name,
+                          keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
                             enabledBorder: OutlineInputBorder(
                                 borderSide:
                                     BorderSide(color: Colors.grey.shade400),
                                 borderRadius: BorderRadius.circular(15.0)),
-                            labelText: 'Email',
+                            labelText: 'User Name',
                             focusedBorder: OutlineInputBorder(
                               borderSide:
                                   BorderSide(color: Colors.grey.shade400),
@@ -66,14 +74,14 @@ class _LoginPageState extends State<LoginPage> {
                             fillColor: Colors.grey.shade100,
                             filled: true,
                             hintStyle: TextStyle(color: Colors.grey[350]),
-                            prefixIcon: Icon(Icons.email),
+                            prefixIcon: Icon(Icons.person),
                           ),
                           onSaved: (String? value) {
                             email = value!;
                           },
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return "Please enter your Email";
+                              return "Please enter your user Name";
                             } else {
                               return null;
                             }
@@ -131,10 +139,18 @@ class _LoginPageState extends State<LoginPage> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Text(
-                            'Forgot password  ? ',
-                            style: TextStyle(
-                                color: Colors.grey[600], fontSize: 16),
+                          GestureDetector(
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ForgotPassword()),
+                            ), // Navigate to SignUpPage
+                            child: const Text(
+                              'Forgot password  ? ',
+                              style: TextStyle(
+                                  color: Color.fromARGB(255, 133, 128, 128),
+                                  fontSize: 16),
+                            ),
                           ),
                         ],
                       ),
@@ -155,7 +171,7 @@ class _LoginPageState extends State<LoginPage> {
                                 formKey.currentState!.save();
 
                                 Map<String, dynamic> reqBody = {
-                                  "email": email,
+                                  "username": email,
                                   "password": password
                                 };
 
@@ -164,11 +180,9 @@ class _LoginPageState extends State<LoginPage> {
                                 };
                                 print('houni');
                                 try {
-                                  Uri uri = Uri.http(
-                                      utils.baseUrlWithoutHttp, "user/login");
-                                  print(uri);
-                                  print(email);
-                                  print(password);
+                                  Uri uri = Uri.http(utils.baseUrlWithoutHttp,
+                                      "api/auth/login");
+
                                   http
                                       .post(uri,
                                           body: json.encode(reqBody),
@@ -177,45 +191,224 @@ class _LoginPageState extends State<LoginPage> {
                                     if (response.statusCode == 200) {
                                       Map<String, dynamic> result =
                                           json.decode(response.body);
+
                                       //SHARED PREFS
-                                      /*
-                                     _prefs.then(
-                                          (value) {
-                                            value.setDouble(
-                                                "balance",
-                                                double.parse(
-                                                    result["balance"].toString()));
-                      
-                                            value.setString(
-                                                "username", (result["username"]));
-                      
-                                            value.setString("_id", (result["_id"]));
-                                          },
-                                        );*/
+                                      tokenToString =
+                                          result["accessToken"].toString();
+
+                                      saveData(
+                                          "token", result["token"].toString());
+                                      SharedPreferences prefs =
+                                          await SharedPreferences.getInstance();
+                                      String? value = prefs.getString("token");
 
                                       print('passssssssssssssss');
                                       Navigator.pushReplacementNamed(
                                           context, "/menu");
+                                    } else if (response.statusCode == 401) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return Dialog(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                            ),
+                                            elevation: 0.0,
+                                            backgroundColor: Colors.transparent,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                              ),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: <Widget>[
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.all(16.0),
+                                                    child: Text(
+                                                      "Error",
+                                                      style: TextStyle(
+                                                        fontSize: 18.0,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            horizontal: 16.0),
+                                                    child: Text(
+                                                      "User not verified or Email or Password are incorrect",
+                                                      style: TextStyle(
+                                                          fontSize: 16.0),
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 16.0),
+                                                  ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(20.0),
+                                                      ),
+                                                      primary: Colors.red,
+                                                    ),
+                                                    child: const Text(
+                                                      "OK",
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
                                     } else {
                                       showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            return const AlertDialog(
-                                              title: Text("Error"),
-                                              content: Text(
-                                                  "Email or Password are incorrect !"),
-                                            );
-                                          });
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return Dialog(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                            ),
+                                            elevation: 0.0,
+                                            backgroundColor: Colors.transparent,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                              ),
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: <Widget>[
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.all(16.0),
+                                                    child: Text(
+                                                      "Error",
+                                                      style: TextStyle(
+                                                        fontSize: 20.0,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const Padding(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            horizontal: 16.0),
+                                                    child: Text(
+                                                      "Try Again ",
+                                                      style: TextStyle(
+                                                          fontSize: 18.0),
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 16.0),
+                                                  ElevatedButton(
+                                                    style: ElevatedButton
+                                                        .styleFrom(
+                                                      shape:
+                                                          RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(20.0),
+                                                      ),
+                                                      primary: Colors.red,
+                                                    ),
+                                                    child: const Text(
+                                                      "OK",
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                      ),
+                                                    ),
+                                                    onPressed: () {
+                                                      Navigator.pop(context);
+                                                    },
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      );
                                     }
                                   });
                                 } catch (error) {
                                   showDialog(
                                     context: context,
                                     builder: (BuildContext context) {
-                                      return const AlertDialog(
-                                        title: Text("Error"),
-                                        content: Text(
-                                            "An error occurred while making the request."),
+                                      return Dialog(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                        ),
+                                        elevation: 0.0,
+                                        backgroundColor: Colors.transparent,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: <Widget>[
+                                              const Padding(
+                                                padding: EdgeInsets.all(16.0),
+                                                child: Text(
+                                                  "Error",
+                                                  style: TextStyle(
+                                                    fontSize: 20.0,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ),
+                                              const Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 16.0),
+                                                child: Text(
+                                                  "An error occurred while making the request.",
+                                                  style:
+                                                      TextStyle(fontSize: 18.0),
+                                                ),
+                                              ),
+                                              SizedBox(height: 16.0),
+                                              ElevatedButton(
+                                                style: ElevatedButton.styleFrom(
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20.0),
+                                                  ),
+                                                  primary: Colors.red,
+                                                ),
+                                                child:const Text(
+                                                  "OK",
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        ),
                                       );
                                     },
                                   );

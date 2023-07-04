@@ -14,23 +14,41 @@ class LogOutButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
-                /*setState(() {
-                  currentIndex = 2;
-                });
-                Navigator.pop(context); */
-                SharedPreferences preferences =
-                    await SharedPreferences.getInstance();
-                await preferences.clear(); // Clear the shared preferences
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text("Confirmation",style: TextStyle(fontSize: 18,fontWeight:FontWeight.bold,color: Colors.red)),
+              content: const Text("Are you sure you want to log out?",style: TextStyle(fontSize: 18),),
+              actions: <Widget>[
+                TextButton(
+                  child: Text("Cancel",style: TextStyle(fontSize: 16,fontWeight:FontWeight.bold,color: Colors.blue)),
+                  onPressed: () {
+                    Navigator.pop(context); // Close the dialog
+                  },
+                ),
+                TextButton(
+                  child: Text("Log Out",style: TextStyle(fontSize: 16,fontWeight:FontWeight.bold,color: Colors.red)),
+                  onPressed: () async {
+                    Navigator.pop(context); // Close the dialog
 
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => LoginPage()),
-                  (route) => false, // Remove all existing routes from the stack
-                );
-              },
-      
-      
-      
+                    SharedPreferences preferences =
+                        await SharedPreferences.getInstance();
+                    await preferences.clear(); // Clear the shared preferences
+
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginPage()),
+                      (route) =>
+                          false, // Remove all existing routes from the stack
+                    );
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      },
       child: Container(
         padding: EdgeInsets.all(15),
         alignment: Alignment.centerLeft,
