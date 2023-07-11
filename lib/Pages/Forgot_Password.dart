@@ -1,3 +1,4 @@
+import 'package:dpc_flutter/Pages/login_page.dart';
 import 'package:dpc_flutter/Pages/menu.dart';
 import 'package:dpc_flutter/Pages/sign_up_page.dart';
 import 'package:dpc_flutter/constant/utils.dart' as utils;
@@ -7,7 +8,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:dpc_flutter/modles/user.dart';
+import 'package:dpc_flutter/modles/Car.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ForgotPassword extends StatefulWidget {
@@ -166,10 +167,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                                 borderRadius:
                                                     BorderRadius.circular(10.0),
                                               ),
-                                              child: Column(
+                                              child: const Column(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: <Widget>[
-                                                  const Padding(
+                                                   Padding(
                                                     padding:
                                                         EdgeInsets.all(16.0),
                                                     child: Text(
@@ -181,7 +182,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                                       ),
                                                     ),
                                                   ),
-                                                  const Padding(
+                                                   Padding(
                                                     padding:
                                                         EdgeInsets.symmetric(
                                                             horizontal: 12.0),
@@ -192,49 +193,113 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                                     ),
                                                   ),
                                                   SizedBox(height: 16.0),
-                                                  ClipRRect(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            50.0),
-                                                    child: ElevatedButton(
-                                                      child: Text("OK"),
-                                                      onPressed: () {
-                                                        Navigator
-                                                            .pushReplacementNamed(
-                                                                context, "/");
-                                                      },
-                                                    ),
-                                                  )
+                                                  
                                                 ],
                                               ),
                                             ),
                                           );
                                         },
-                                      );
+                                      ).then((value) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => LoginPage()),
+                                        );
+                                      });
                                     } else {
                                       // Show error dialog
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return AlertDialog(
-                                            title: Text("Error"),
-                                            content: Text("Try Again"),
-                                          );
-                                        },
-                                      );
+                                         showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return Dialog(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
+                                      elevation: 0.0,
+                                      backgroundColor: Colors.transparent,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                        ),
+                                        child: const Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: <Widget>[
+                                             Padding(
+                                              padding: EdgeInsets.all(16.0),
+                                              child: Text(
+                                                "Error",
+                                                style: TextStyle(
+                                                    fontSize: 20.0,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.red),
+                                              ),
+                                            ),
+                                             Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 12.0),
+                                              child: Text(
+                                                "Try Again",
+                                                style:
+                                                    TextStyle(fontSize: 18.0),
+                                              ),
+                                            ),
+                                            SizedBox(height: 16.0),
+                                          
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
                                     }
                                   });
                                 } catch (error) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return const AlertDialog(
-                                        title: Text("Error"),
-                                        content: Text(
-                                            "An error occurred while making the request."),
-                                      );
-                                    },
-                                  );
+                                   showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  elevation: 0.0,
+                                  backgroundColor: Colors.transparent,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    child:const Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                         Padding(
+                                          padding: EdgeInsets.all(16.0),
+                                          child: Text(
+                                            "Error",
+                                            style: TextStyle(
+                                                fontSize: 20.0,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.red),
+                                          ),
+                                        ),
+                                         Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 12.0),
+                                          child: Text(
+                                            "An error occurred while making the request",
+                                            style: TextStyle(fontSize: 18.0),
+                                          ),
+                                        ),
+                                        SizedBox(height: 16.0),
+                                       
+                                      ],
+                                    ),
+                                  ),
+                                );
+                              },
+                            );
                                 }
                               }
                             },

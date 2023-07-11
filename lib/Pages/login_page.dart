@@ -4,11 +4,12 @@ import 'package:dpc_flutter/Pages/sign_up_page.dart';
 import 'package:dpc_flutter/constant/utils.dart' as utils;
 import 'package:flutter/material.dart';
 import 'package:dpc_flutter/components/My_Box.dart';
+import 'package:jaguar_jwt/jaguar_jwt.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:dpc_flutter/modles/user.dart';
+import 'package:dpc_flutter/modles/Car.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -19,10 +20,43 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  String token = "";
+  String dataUser = "";
+
+  _loadCounter() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      token = (prefs.getString('token') ?? '');
+      final parts = token.split('.');
+      final payload = parts[1];
+      final decodedPayload = B64urlEncRfc7515.decodeUtf8(payload);
+      final payloadMap = json.decode(decodedPayload);
+      dataUser = payloadMap['sub'];
+    });
+  }
+
+  @override
+  void initState() {
+//////////////
+    super.initState();
+    _loadCounter();
+  }
+
+  //////////////////////////////////////////////////
   late String? email;
   late String? password;
 
   late String tokenToString = "a";
+  late int userId ;
+
+  late String username = "a";
+  late String fullName = "a";
+  late String address = "a";
+  late String driverLicense = "a";
+  //late DateTime delevredOn;
+  late int number;
+  late String emailProfile = "a";
+
   bool _obscureText = true;
 
   final formKey = GlobalKey<FormState>();
@@ -169,7 +203,7 @@ class _LoginPageState extends State<LoginPage> {
                             onPressed: () {
                               if (formKey.currentState!.validate()) {
                                 formKey.currentState!.save();
-
+                                print(dataUser);
                                 Map<String, dynamic> reqBody = {
                                   "username": email,
                                   "password": password
@@ -193,18 +227,66 @@ class _LoginPageState extends State<LoginPage> {
                                           json.decode(response.body);
 
                                       //SHARED PREFS
-                                      tokenToString =
-                                          result["accessToken"].toString();
+                                      tokenToString = result["accessToken"];
 
                                       saveData(
-                                          "token", result["token"].toString());
+                                          "token", tokenToString.toString());
                                       SharedPreferences prefs =
                                           await SharedPreferences.getInstance();
                                       String? value = prefs.getString("token");
-
+                                      print(value);
                                       print('passssssssssssssss');
                                       Navigator.pushReplacementNamed(
                                           context, "/menu");
+//////////////////////////////////
+                                      Map<String, String> headersPofile = {
+                                        "Authorization": "Bearer $value",
+                                        "Content-Type": "application/json"
+                                      };
+                                      Uri uriProfile = Uri.http(
+                                          utils.baseUrlWithoutHttp,
+                                          "users/getbyusername/$dataUser");
+                                      http
+                                          .get(uriProfile,
+                                              headers: headersPofile)
+                                          .then((http.Response response) async {
+                                        if (response.statusCode == 200) {
+                                          Map<String, dynamic> resultProfile =
+                                              json.decode(response.body);
+                                              userId = resultProfile["userId"];
+                                          username = resultProfile["username"];
+                                          fullName = resultProfile["fullName"];
+                                          address = resultProfile["address"];
+                                          driverLicense =
+                                              resultProfile["driverLicense"];
+                                          number = resultProfile["number"];
+                                          emailProfile = resultProfile["email"];
+                                          //delevredOn = resultProfile["deliveredOn"];
+                                          saveData(
+                                              "userId", userId.toString());
+                                          saveData(
+                                              "username", username.toString());
+                                          saveData(
+                                              "fullName", fullName.toString());
+                                          saveData(
+                                              "address", address.toString());
+                                          saveData("driverLicense",
+                                              driverLicense.toString());
+                                          saveData("number", number.toString());
+                                          saveData("emailProfile",
+                                              emailProfile.toString());
+                                          //saveData("deliveredOn",delevredOn.toString());
+                                          SharedPreferences prefs =
+                                              await SharedPreferences
+                                                  .getInstance();
+                                          String? value =
+                                              prefs.getString("userId");
+                                          print(value);
+                                        } else {
+                                          print("ereeeeeeeeeeeeeeeeeer");
+                                        }
+                                        ;
+                                      });
                                     } else if (response.statusCode == 401) {
                                       showDialog(
                                         context: context,
@@ -396,7 +478,7 @@ class _LoginPageState extends State<LoginPage> {
                                                   ),
                                                   primary: Colors.red,
                                                 ),
-                                                child:const Text(
+                                                child: const Text(
                                                   "OK",
                                                   style: TextStyle(
                                                     color: Colors.white,
@@ -413,6 +495,11 @@ class _LoginPageState extends State<LoginPage> {
                                     },
                                   );
                                 }
+                                ;
+//////////////////////////////////////////
+                                ///
+
+//////////////////////
                               }
                             },
                             child: Container(

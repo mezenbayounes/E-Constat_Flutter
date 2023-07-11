@@ -1,3 +1,4 @@
+import 'package:dpc_flutter/Pages/Home_Page.dart';
 import 'package:dpc_flutter/Pages/menu.dart';
 import 'package:dpc_flutter/Pages/sign_up_page.dart';
 import 'package:dpc_flutter/constant/utils.dart' as utils;
@@ -7,7 +8,6 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:dpc_flutter/modles/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ChangePassword extends StatefulWidget {
@@ -23,6 +23,24 @@ class _ChangePasswordState extends State<ChangePassword> {
   bool _obscureText = true;
 
   final formKey = GlobalKey<FormState>();
+
+  String token = "";
+  String email = "mezenbay@gmail.com";
+
+  _loadCounter() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      token = (prefs.getString('token') ?? '');
+      //email = (prefs.getString('email') ?? '');
+    });
+  }
+
+  @override
+  void initState() {
+//////////////
+    super.initState();
+    _loadCounter();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +59,7 @@ class _ChangePasswordState extends State<ChangePassword> {
 
                     // text welcome
                     Text(
-                      ' Change Your Password ',
+                      'Change Your Password',
                       style: TextStyle(color: Colors.grey[800], fontSize: 26),
                     ),
                     const SizedBox(height: 50),
@@ -156,31 +174,83 @@ class _ChangePasswordState extends State<ChangePassword> {
                                 };
 
                                 Map<String, String> headers = {
+                                  "Authorization": "Bearer $token",
                                   "Content-Type": "application/json"
                                 };
                                 print('houni');
                                 try {
                                   Uri uri = Uri.http(utils.baseUrlWithoutHttp,
-                                      "api/users/login");
+                                      "users/users/$email/password");
 
                                   http
-                                      .post(uri,
-                                          body: json.encode(reqBody),
-                                          headers: headers)
+                                      .put(
+                                    uri,
+                                    body: json.encode(reqBody),
+                                    headers: headers,
+                                  )
                                       .then((http.Response response) async {
                                     if (response.statusCode == 200) {
-                                      Map<String, dynamic> result =
-                                          json.decode(response.body);
-
-                                      Navigator.pushReplacementNamed(
-                                          context, "/menu");
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return Dialog(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                            ),
+                                            elevation: 0.0,
+                                            backgroundColor: Colors.transparent,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                              ),
+                                              child:const Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: <Widget>[
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsets.all(16.0),
+                                                    child: Text(
+                                                      "Success",
+                                                      style: TextStyle(
+                                                        fontSize: 20.0,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            horizontal: 12.0),
+                                                    child: Text(
+                                                      "Password Changed successfully",
+                                                      style: TextStyle(
+                                                          fontSize: 18.0),
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 16.0),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ).then((value) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => Menu(index:3)),
+                                        );
+                                      });
                                     } else {
                                       showDialog(
                                           context: context,
                                           builder: (BuildContext context) {
                                             return const AlertDialog(
                                               title: Text("Error"),
-                                              content: Text("Try Again"),
+                                              content: Text("Password incorrect"),
                                             );
                                           });
                                     }

@@ -1,3 +1,4 @@
+import 'package:dpc_flutter/Pages/Add_Car.dart';
 import 'package:dpc_flutter/Pages/Home_Page.dart';
 import 'package:dpc_flutter/Pages/menu.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       routes: {
         "/": (context) =>  LoginPage(),
-        "/menu": (context) => const Menu(),
+        "/menu": (context) =>  Menu(index:0),
+        "/addCar": (context) => const AddCar(),
        
       },
       initialRoute: "/",

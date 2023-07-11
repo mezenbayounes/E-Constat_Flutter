@@ -10,7 +10,8 @@ import 'package:flutter/material.dart';
 import 'Change_Password.dart';
 
 class Menu extends StatefulWidget {
-  const Menu({Key? key}) : super(key: key);
+  
+  const Menu({Key? key, required int index}) : super(key: key);
 
   @override
   State<Menu> createState() => _MenuState();
@@ -22,7 +23,7 @@ class _MenuState extends State<Menu> {
     HomePage(),
     MyCars(),
     SettingsPage(),
-    ChangePassword()
+    Profile_Page(),
   ];
   @override
   Widget build(BuildContext context) {

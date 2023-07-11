@@ -5,6 +5,8 @@ import 'package:dpc_flutter/constant/utils.dart' as utils;
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
+import 'login_page.dart';
+
 class SignUp extends StatefulWidget {
   SignUp({super.key});
 
@@ -366,67 +368,191 @@ class _SignUpState extends State<SignUp> {
                                 .then((http.Response response) async {
                               if (response.statusCode == 201) {
                                 showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return const AlertDialog(
-                                        title: Text("Success"),
-                                        content: Text("User Created !"),
-                                      );
-                                    });
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return Dialog(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
+                                      elevation: 0.0,
+                                      backgroundColor: Colors.transparent,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                        ),
+                                        child: const Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: <Widget>[
+                                            Padding(
+                                              padding: EdgeInsets.all(16.0),
+                                              child: Text(
+                                                "Success",
+                                                style: TextStyle(
+                                                  fontSize: 20.0,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 12.0),
+                                              child: Text(
+                                                "User Created",
+                                                style:
+                                                    TextStyle(fontSize: 18.0),
+                                              ),
+                                            ),
+                                            SizedBox(height: 16.0),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ).then((value) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => LoginPage()),
+                                  );
+                                });
 
-                                Navigator.pushReplacementNamed(context, "/");
-/*
-                                Uri uri = Uri.http(utils.baseUrlWithoutHttp,
-                                    "user/send-confirmation-email");
-
-                                http.post(uri,
-                                    body: json.encode(reqBodyEmail),
-                                    headers: headers);
-                                    */
-
-                                //SHARED PREFS
-                                /*
-                                       _prefs.then(
-                                            (value) {
-                                              value.setDouble(
-                                                  "balance",
-                                                  double.parse(
-                                                      result["balance"].toString()));
-                        
-                                              value.setString(
-                                                  "username", (result["username"]));
-                        
-                                              value.setString("_id", (result["_id"]));
-                                            },
-                                          );*/
-                              } else if (response.statusCode == 403) {
+                              } else if (response.statusCode == 400) {
                                 showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return const AlertDialog(
-                                        title: Text("Error"),
-                                        content: Text("user already exist !"),
-                                      );
-                                    });
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return Dialog(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
+                                      elevation: 0.0,
+                                      backgroundColor: Colors.transparent,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                        ),
+                                        child: const Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: <Widget>[
+                                            Padding(
+                                              padding: EdgeInsets.all(16.0),
+                                              child: Text(
+                                                "Error",
+                                                style: TextStyle(
+                                                    fontSize: 20.0,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.red),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 12.0),
+                                              child: Text(
+                                                "User Already Exist",
+                                                style:
+                                                    TextStyle(fontSize: 18.0),
+                                              ),
+                                            ),
+                                            SizedBox(height: 16.0),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
                               } else {
                                 showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return const AlertDialog(
-                                        title: Text("Error"),
-                                        content: Text("somthing is wrong !"),
-                                      );
-                                    });
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return Dialog(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(10.0),
+                                      ),
+                                      elevation: 0.0,
+                                      backgroundColor: Colors.transparent,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                        ),
+                                        child: const Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: <Widget>[
+                                            Padding(
+                                              padding: EdgeInsets.all(16.0),
+                                              child: Text(
+                                                "Error",
+                                                style: TextStyle(
+                                                    fontSize: 20.0,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.red),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 12.0),
+                                              child: Text(
+                                                "Try Again",
+                                                style:
+                                                    TextStyle(fontSize: 18.0),
+                                              ),
+                                            ),
+                                            SizedBox(height: 16.0),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                );
                               }
                             });
                           } catch (error) {
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {
-                                return AlertDialog(
-                                  title: Text("Error"),
-                                  content: Text(
-                                      "An error occurred while making the request : $error"),
+                                return Dialog(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                  ),
+                                  elevation: 0.0,
+                                  backgroundColor: Colors.transparent,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10.0),
+                                    ),
+                                    child: const Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        Padding(
+                                          padding: EdgeInsets.all(16.0),
+                                          child: Text(
+                                            "Error",
+                                            style: TextStyle(
+                                                fontSize: 20.0,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.red),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 12.0),
+                                          child: Text(
+                                            "An error occurred while making the request",
+                                            style: TextStyle(fontSize: 18.0),
+                                          ),
+                                        ),
+                                        SizedBox(height: 16.0),
+                                      ],
+                                    ),
+                                  ),
                                 );
                               },
                             );
