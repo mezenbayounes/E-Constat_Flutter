@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dpc_flutter/Pages/verify.dart';
 import 'package:flutter/material.dart';
 import 'package:dpc_flutter/constant/utils.dart' as utils;
 import 'package:intl/intl.dart';
@@ -361,12 +362,26 @@ class _SignUpState extends State<SignUp> {
                             Uri uri = Uri.http(
                                 utils.baseUrlWithoutHttp, "api/auth/register");
 
+                            Uri uriOTP = Uri.http(utils.baseUrlWithoutHttp,
+                                "users/sendotp/$email");
+                            print(uriOTP);
+
                             http
                                 .post(uri,
                                     body: json.encode(reqBody),
                                     headers: headers)
                                 .then((http.Response response) async {
-                              if (response.statusCode == 201) {
+                              if (response.statusCode == 200) {
+
+                                http
+                                    .post(uriOTP, headers: headers)
+                                    .then((http.Response response) async {
+                                  if (response.statusCode == 200) {
+                                    print("opt sended");
+                                  } else {
+                                    print("noooooooo");
+                                  }
+                                });
                                 showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
@@ -415,11 +430,11 @@ class _SignUpState extends State<SignUp> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => LoginPage()),
+                                        builder: (context) => const Verify()),
                                   );
                                 });
-
                               } else if (response.statusCode == 400) {
+                                
                                 showDialog(
                                   context: context,
                                   builder: (BuildContext context) {

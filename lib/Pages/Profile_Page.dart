@@ -50,9 +50,16 @@ class _Profile_PageState extends State<Profile_Page> {
       emailProfile = (prefs.getString('emailProfile') ?? '');
       driverLicense = (prefs.getString('driverLicense') ?? '');
       token = (prefs.getString('token') ?? '');
+
       final parts = token.split('.');
-      final payload = parts[1];
-      dataUser = B64urlEncRfc7515.decodeUtf8(payload);
+      if (parts.length >= 2) {
+        final payload = parts[1];
+        dataUser = B64urlEncRfc7515.decodeUtf8(payload);
+      } else {
+        // Handle the case where the token does not contain the expected number of parts.
+        // You may want to set a default value or show an error message.
+      }
+
       print(emailProfile);
     });
   }
@@ -87,7 +94,7 @@ class _Profile_PageState extends State<Profile_Page> {
                 padding: const EdgeInsets.symmetric(horizontal: 50.0),
                 child: TextFormField(
                     controller: TextEditingController(text: username),
-                    enabled: update,
+                    enabled: false,
                     keyboardType: TextInputType.name,
                     decoration: InputDecoration(
                       enabledBorder: OutlineInputBorder(

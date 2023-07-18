@@ -1,19 +1,19 @@
-import 'package:dpc_flutter/Pages/login_page.dart';
+import 'dart:convert';
 
+import 'package:dpc_flutter/Pages/login_page.dart';
 import 'package:dpc_flutter/constant/utils.dart' as utils;
 import 'package:flutter/material.dart';
-
 import 'package:http/http.dart' as http;
 
-
-class ForgotPassword extends StatefulWidget {
-  const ForgotPassword({super.key});
+class Verify extends StatefulWidget {
+  const Verify({super.key});
 
   @override
-  State<ForgotPassword> createState() => _ForgotPasswordState();
+  State<Verify> createState() => _VerifyState();
 }
 
-class _ForgotPasswordState extends State<ForgotPassword> {
+class _VerifyState extends State<Verify> {
+  late String? otp;
   late String? email;
 
   final formKey = GlobalKey<FormState>();
@@ -32,15 +32,18 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   children: [
                     const SizedBox(height: 20),
                     //Logo
-                    Image.asset('lib/images/forgot_password.png'),
+                    Image.asset('lib/images/otp.png'),
+                    const SizedBox(height: 10),
+                    const Center(
+                        child: Text(
+                      "Please Verify Your Acount",
+                      style: TextStyle(
+                          fontSize: 27,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 84, 83, 83)),
+                    )),
 
-                    // text welcome
-                    Text(
-                      'Please enter your Email ',
-                      style: TextStyle(color: Colors.grey[800], fontSize: 26),
-                    ),
-                    const SizedBox(height: 50),
-                    //user name text filed
+                    const SizedBox(height: 20),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 25.0),
                       child: TextFormField(
@@ -65,7 +68,41 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           },
                           validator: (value) {
                             if (value!.isEmpty) {
-                              return "Please enter your Email";
+                              return "Please enter Your email";
+                            } else {
+                              return null;
+                            }
+                          }),
+                    ),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    //user name text filed
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                      child: TextFormField(
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            enabledBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Colors.grey.shade400),
+                                borderRadius: BorderRadius.circular(15.0)),
+                            labelText: 'Code',
+                            focusedBorder: OutlineInputBorder(
+                              borderSide:
+                                  BorderSide(color: Colors.grey.shade400),
+                            ),
+                            fillColor: Colors.grey.shade100,
+                            filled: true,
+                            hintStyle: TextStyle(color: Colors.grey[350]),
+                            prefixIcon: Icon(Icons.lock ),
+                          ),
+                          onSaved: (String? value) {
+                            otp = value!;
+                          },
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Please enter The Code";
                             } else {
                               return null;
                             }
@@ -115,7 +152,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                               Padding(
                                                 padding: EdgeInsets.all(16.0),
                                                 child: Text(
-                                                  "Sending Email",
+                                                  "Verification ",
                                                   style: TextStyle(
                                                     fontSize: 20.0,
                                                     fontWeight: FontWeight.bold,
@@ -135,10 +172,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                   );
 
 // Continue with your code for sending the email
+
                                   Uri uri = Uri.http(utils.baseUrlWithoutHttp,
-                                      "/users/$email/forgot");
+                                      "/users/verif/$email/$otp");
                                   http
-                                      .put(uri, headers: headers)
+                                      .post(uri, headers: headers)
                                       .then((http.Response response) async {
                                     Navigator.pop(
                                         context); // Dismiss the loading dialog
@@ -165,7 +203,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                               child: const Column(
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: <Widget>[
-                                                   Padding(
+                                                  Padding(
                                                     padding:
                                                         EdgeInsets.all(16.0),
                                                     child: Text(
@@ -177,18 +215,17 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                                       ),
                                                     ),
                                                   ),
-                                                   Padding(
+                                                  Padding(
                                                     padding:
                                                         EdgeInsets.symmetric(
                                                             horizontal: 12.0),
                                                     child: Text(
-                                                      "Password sent successfully",
+                                                      "Account Verified",
                                                       style: TextStyle(
                                                           fontSize: 18.0),
                                                     ),
                                                   ),
                                                   SizedBox(height: 16.0),
-                                                  
                                                 ],
                                               ),
                                             ),
@@ -198,103 +235,109 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) => LoginPage()),
+                                              builder: (context) =>
+                                                  LoginPage()),
                                         );
                                       });
                                     } else {
                                       // Show error dialog
-                                         showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return Dialog(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10.0),
-                                      ),
-                                      elevation: 0.0,
-                                      backgroundColor: Colors.transparent,
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                        ),
-                                        child: const Column(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: <Widget>[
-                                             Padding(
-                                              padding: EdgeInsets.all(16.0),
-                                              child: Text(
-                                                "Error",
-                                                style: TextStyle(
-                                                    fontSize: 20.0,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.red),
+                                      showDialog(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return Dialog(
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10.0),
+                                            ),
+                                            elevation: 0.0,
+                                            backgroundColor: Colors.transparent,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius:
+                                                    BorderRadius.circular(10.0),
+                                              ),
+                                              child: const Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: <Widget>[
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsets.all(16.0),
+                                                    child: Text(
+                                                      "Error",
+                                                      style: TextStyle(
+                                                          fontSize: 20.0,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color: Colors.red),
+                                                    ),
+                                                  ),
+                                                  Padding(
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                            horizontal: 12.0),
+                                                    child: Text(
+                                                      "Try Again",
+                                                      style: TextStyle(
+                                                          fontSize: 18.0),
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 16.0),
+                                                ],
                                               ),
                                             ),
-                                             Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: 12.0),
-                                              child: Text(
-                                                "Try Again",
-                                                style:
-                                                    TextStyle(fontSize: 18.0),
-                                              ),
-                                            ),
-                                            SizedBox(height: 16.0),
-                                          
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                );
+                                          );
+                                        },
+                                      );
                                     }
                                   });
                                 } catch (error) {
-                                   showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return Dialog(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10.0),
-                                  ),
-                                  elevation: 0.0,
-                                  backgroundColor: Colors.transparent,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(10.0),
-                                    ),
-                                    child:const Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                         Padding(
-                                          padding: EdgeInsets.all(16.0),
-                                          child: Text(
-                                            "Error",
-                                            style: TextStyle(
-                                                fontSize: 20.0,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.red),
+                                  showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return Dialog(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
+                                        ),
+                                        elevation: 0.0,
+                                        backgroundColor: Colors.transparent,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(10.0),
+                                          ),
+                                          child: const Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: <Widget>[
+                                              Padding(
+                                                padding: EdgeInsets.all(16.0),
+                                                child: Text(
+                                                  "Error",
+                                                  style: TextStyle(
+                                                      fontSize: 20.0,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.red),
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 12.0),
+                                                child: Text(
+                                                  "An error occurred while making the request",
+                                                  style:
+                                                      TextStyle(fontSize: 18.0),
+                                                ),
+                                              ),
+                                              SizedBox(height: 16.0),
+                                            ],
                                           ),
                                         ),
-                                         Padding(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 12.0),
-                                          child: Text(
-                                            "An error occurred while making the request",
-                                            style: TextStyle(fontSize: 18.0),
-                                          ),
-                                        ),
-                                        SizedBox(height: 16.0),
-                                       
-                                      ],
-                                    ),
-                                  ),
-                                );
-                              },
-                            );
+                                      );
+                                    },
+                                  );
                                 }
                               }
                             },
@@ -306,7 +349,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                 ),
                                 child: const Center(
                                   child: Text(
-                                    "Send ",
+                                    "Verify ",
                                     style: TextStyle(
                                         fontSize: 20,
                                         color: Colors.white,

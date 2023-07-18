@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -17,45 +18,53 @@ class MyCars extends StatefulWidget {
 
 class _MyCarsState extends State<MyCars> {
   String token = "";
+  String userId = "";
   String dataUser = "";
   List<Car> cars = [];
+  late Timer timer;
   late Future<bool> carFetched;
 
   Future<bool> fetchCarFromServer() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
+      userId = (prefs.getString('userId') ?? '');
       token = (prefs.getString('token') ?? '');
       final parts = token.split('.');
-      final payload = parts[1];
-      final decodedPayload = B64urlEncRfc7515.decodeUtf8(payload);
-      final payloadMap = json.decode(decodedPayload);
-      dataUser = payloadMap['sub'];
+      if (parts.length >= 2) {
+        final payload = parts[1];
+        dataUser = B64urlEncRfc7515.decodeUtf8(payload);
+      } else {
+        // Handle the case where the token does not contain the expected number of parts.
+        // You may want to set a default value or show an error message.
+      }
     });
     try {
-      print("mezeenn $token");
+      print("Token: $token");
+      print("USERID: $userId");
+
       Map<String, String> headers = {
         "Authorization": "Bearer $token",
         "Content-Type": "application/json"
       };
-      Uri uri = Uri.http(utils.baseUrlWithoutHttp, "/car/get");
+      Uri uri = Uri.http(utils.baseUrlWithoutHttp, "/users/getCars/$userId");
 
       http.Response response = await http.get(uri, headers: headers);
 
       if (response.statusCode == 200) {
         List<dynamic> carsRetrieved = json.decode(response.body);
 
-        for (var car in carsRetrieved) {
-          cars.add(
-            Car(
-              carBrand: car["carBrand"],
-              type: car["type"],
-              numSerie: car["numSerie"],
-              numImmatriculation: car["numImmatriculation"],
-              fiscalPower: int.parse(car["fiscalPower"].toString()),
-            ),
-          );
-          print("aaaaaaaaaaaaaaaaaaaa");
-        }
+        setState(() {
+          cars = carsRetrieved
+              .map((car) => Car(
+                    carId: car["carId"],
+                    carBrand: car["carBrand"],
+                    type: car["type"],
+                    numSerie: car["numSerie"],
+                    numImmatriculation: car["numImmatriculation"],
+                    fiscalPower: int.parse(car["fiscalPower"].toString()),
+                  ))
+              .toList();
+        });
 
         return true;
       } else {
@@ -72,6 +81,10 @@ class _MyCarsState extends State<MyCars> {
     }
   }
 
+  Future<void> refreshData() async {
+    await fetchCarFromServer();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -83,116 +96,119 @@ class _MyCarsState extends State<MyCars> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
-      body: FutureBuilder<bool>(
-        future: carFetched,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 250, top: 40),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 6, 142, 205),
-                      border: Border.all(
-                        color: Color.fromARGB(222, 249, 170, 34),
-                        width: 2,
+      body: RefreshIndicator(
+        onRefresh: refreshData,
+        child: FutureBuilder<bool>(
+          future: carFetched,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 250, top: 40),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: const Color.fromARGB(255, 6, 142, 205),
+                        border: Border.all(
+                          color: Color.fromARGB(222, 249, 170, 34),
+                          width: 2,
+                        ),
+                        borderRadius: const BorderRadius.only(
+                          topRight: Radius.circular(50.0),
+                          bottomRight: Radius.circular(50.0),
+                        ),
                       ),
-                      borderRadius: const BorderRadius.only(
-                        topRight: Radius.circular(50.0),
-                        bottomRight: Radius.circular(50.0),
-                      ),
-                    ),
-                    child: const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text(
-                        ' Your Cars    ',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 25.0,
-                            fontWeight: FontWeight.bold),
+                      child: const Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          ' Your Cars    ',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 25.0,
+                              fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                Center(
-                  child: Container(
-                    width: 350,
-                    height: 100,
-                    child: Stack(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Color.fromARGB(255, 235, 235, 235),
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                        ),
-                        Positioned.fill(
-                          child: Container(
+                  SizedBox(
+                    height: 30,
+                  ),
+                  Center(
+                    child: Container(
+                      width: 350,
+                      height: 100,
+                      child: Stack(
+                        children: [
+                          Container(
                             decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                begin: Alignment.bottomCenter,
-                                end: Alignment.topCenter,
-                                colors: [
-                                  Colors.transparent,
-                                  Colors.white,
-                                ],
-                              ),
+                              color: Color.fromARGB(255, 235, 235, 235),
                               borderRadius: BorderRadius.circular(50),
                             ),
                           ),
-                        ),
-                        const Center(
-                          child: Text(
-                            'Manage Your Cars ',
-                            style: TextStyle(
-                                fontSize: 30,
-                                color: const Color.fromARGB(255, 6, 142, 205),
-                                fontWeight: FontWeight.bold),
+                          Positioned.fill(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  begin: Alignment.bottomCenter,
+                                  end: Alignment.topCenter,
+                                  colors: [
+                                    Colors.transparent,
+                                    Colors.white,
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(50),
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
+                          const Center(
+                            child: Text(
+                              'Manage Your Cars ',
+                              style: TextStyle(
+                                  fontSize: 30,
+                                  color: const Color.fromARGB(255, 6, 142, 205),
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 40,
-                ),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: cars.length,
-                    itemBuilder: (context, index) {
-                      return InkWell(
-                        child: CarItem(
-                          car: cars[index],
-                        ),
-                      );
-                    },
+                  SizedBox(
+                    height: 40,
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 100.0, left: 60.0),
-                  child: IconButton(
-                    icon: const Icon(
-                      Icons.add_circle_outline_sharp,
-                      color: Color.fromARGB(255, 6, 142, 205),
-                      size: 80,
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: cars.length,
+                      itemBuilder: (context, index) {
+                        return InkWell(
+                          child: CarItem(
+                            car: cars[index],
+                          ),
+                        );
+                      },
                     ),
-                    onPressed: () {
-                      Navigator.pushNamed(context, '/addCar');
-                    },
                   ),
-                ),
-                SizedBox(height: 50),
-              ],
-            );
-          } else {
-            return Center(child: CircularProgressIndicator());
-          }
-        },
+                  Padding(
+                    padding: const EdgeInsets.only(right: 100.0, left: 60.0),
+                    child: IconButton(
+                      icon: const Icon(
+                        Icons.add_circle_outline_sharp,
+                        color: Color.fromARGB(255, 6, 142, 205),
+                        size: 80,
+                      ),
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/addCar');
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 50),
+                ],
+              );
+            } else {
+              return Center(child: CircularProgressIndicator());
+            }
+          },
+        ),
       ),
     );
   }

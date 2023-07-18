@@ -1,6 +1,8 @@
 import 'package:dpc_flutter/Pages/Forgot_Password.dart';
 import 'package:dpc_flutter/Pages/menu.dart';
 import 'package:dpc_flutter/Pages/sign_up_page.dart';
+import 'package:dpc_flutter/Pages/verify.dart';
+import 'package:dpc_flutter/Pages/verifyFromLogin.dart';
 import 'package:dpc_flutter/constant/utils.dart' as utils;
 import 'package:flutter/material.dart';
 import 'package:dpc_flutter/components/My_Box.dart';
@@ -21,6 +23,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   String token = "";
+
   String dataUser = "";
 
   _loadCounter() async {
@@ -47,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
   late String? password;
 
   late String tokenToString = "a";
-  late int userId ;
+  late int userId;
 
   late String username = "a";
   late String fullName = "a";
@@ -203,7 +206,7 @@ class _LoginPageState extends State<LoginPage> {
                             onPressed: () {
                               if (formKey.currentState!.validate()) {
                                 formKey.currentState!.save();
-                                print(dataUser);
+                                print('Sub : $dataUser');
                                 Map<String, dynamic> reqBody = {
                                   "username": email,
                                   "password": password
@@ -228,13 +231,20 @@ class _LoginPageState extends State<LoginPage> {
 
                                       //SHARED PREFS
                                       tokenToString = result["accessToken"];
+                                      final parts = tokenToString.split('.');
+                                      final payload = parts[1];
+                                      final decodedPayload =
+                                          B64urlEncRfc7515.decodeUtf8(payload);
+                                      final payloadMap =
+                                          json.decode(decodedPayload);
+                                      dataUser = payloadMap['sub'];
 
                                       saveData(
                                           "token", tokenToString.toString());
                                       SharedPreferences prefs =
                                           await SharedPreferences.getInstance();
                                       String? value = prefs.getString("token");
-                                      print(value);
+                                      print('token login $value');
                                       print('passssssssssssssss');
                                       Navigator.pushReplacementNamed(
                                           context, "/menu");
@@ -243,6 +253,7 @@ class _LoginPageState extends State<LoginPage> {
                                         "Authorization": "Bearer $value",
                                         "Content-Type": "application/json"
                                       };
+                                      print('Sub2 : $dataUser');
                                       Uri uriProfile = Uri.http(
                                           utils.baseUrlWithoutHttp,
                                           "users/getbyusername/$dataUser");
@@ -253,7 +264,8 @@ class _LoginPageState extends State<LoginPage> {
                                         if (response.statusCode == 200) {
                                           Map<String, dynamic> resultProfile =
                                               json.decode(response.body);
-                                              userId = resultProfile["userId"];
+
+                                          userId = resultProfile["userId"];
                                           username = resultProfile["username"];
                                           fullName = resultProfile["fullName"];
                                           address = resultProfile["address"];
@@ -262,8 +274,8 @@ class _LoginPageState extends State<LoginPage> {
                                           number = resultProfile["number"];
                                           emailProfile = resultProfile["email"];
                                           //delevredOn = resultProfile["deliveredOn"];
-                                          saveData(
-                                              "userId", userId.toString());
+                                          saveData("token", tokenToString.toString());
+                                          saveData("userId", userId.toString());
                                           saveData(
                                               "username", username.toString());
                                           saveData(
@@ -324,7 +336,7 @@ class _LoginPageState extends State<LoginPage> {
                                                         EdgeInsets.symmetric(
                                                             horizontal: 16.0),
                                                     child: Text(
-                                                      "User not verified or Email or Password are incorrect",
+                                                      "User not verified ",
                                                       style: TextStyle(
                                                           fontSize: 16.0),
                                                     ),
@@ -356,7 +368,14 @@ class _LoginPageState extends State<LoginPage> {
                                             ),
                                           );
                                         },
-                                      );
+                                      ).then((value) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const VerifyFromLogin()),
+                                        );
+                                      });
                                     } else {
                                       showDialog(
                                         context: context,

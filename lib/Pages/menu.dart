@@ -1,13 +1,11 @@
 import 'package:dpc_flutter/Pages/Profile_Page.dart';
 import 'package:dpc_flutter/Pages/Settings_Page.dart';
-import 'package:dpc_flutter/Pages/login_page.dart';
-import 'package:dpc_flutter/Pages/sign_up_page.dart';
+
 import 'package:dpc_flutter/Pages/Home_Page.dart';
 import 'package:dpc_flutter/Pages/My_carsPage.dart';
 
 import 'package:flutter/material.dart';
 
-import 'Change_Password.dart';
 
 class Menu extends StatefulWidget {
   

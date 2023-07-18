@@ -1,4 +1,5 @@
 class Car {
+  int? carId;
   String? carBrand;
   String? type;
   String? carImage;
@@ -6,6 +7,7 @@ class Car {
   String? numSerie;
   String? numImmatriculation;
   Car({
+    this.carId ,
     this.carBrand,
     this.type,
     this.carImage,

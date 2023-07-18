@@ -12,29 +12,56 @@ class LogOutButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void saveData(String key, String value) async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString(key, value);
+    }
+
     return GestureDetector(
       onTap: () async {
         showDialog(
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: const Text("Confirmation",style: TextStyle(fontSize: 18,fontWeight:FontWeight.bold,color: Colors.red)),
-              content: const Text("Are you sure you want to log out?",style: TextStyle(fontSize: 18),),
+              title: const Text("Confirmation",
+                  style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red)),
+              content: const Text(
+                "Are you sure you want to log out?",
+                style: TextStyle(fontSize: 18),
+              ),
               actions: <Widget>[
                 TextButton(
-                  child: Text("Cancel",style: TextStyle(fontSize: 16,fontWeight:FontWeight.bold,color: Colors.blue)),
+                  child: Text("Cancel",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue)),
                   onPressed: () {
                     Navigator.pop(context); // Close the dialog
                   },
                 ),
                 TextButton(
-                  child: Text("Log Out",style: TextStyle(fontSize: 16,fontWeight:FontWeight.bold,color: Colors.red)),
+                  child: Text("Log Out",
+                      style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red)),
                   onPressed: () async {
                     Navigator.pop(context); // Close the dialog
 
-                    SharedPreferences preferences =
-                        await SharedPreferences.getInstance();
-                    await preferences.clear(); // Clear the shared preferences
+                    //SharedPreferences preferences =await SharedPreferences.getInstance();
+                    saveData("token", "");
+                    saveData("userId", "");
+                    saveData("username", "");
+                    saveData("fullName", "");
+                    saveData("address", "");
+                    saveData("driverLicense", "");
+                    saveData("number", "");
+                    saveData("emailProfile", "");
+                   // await preferences.clear(); // Clear the shared preferences
 
                     Navigator.pushAndRemoveUntil(
                       context,
