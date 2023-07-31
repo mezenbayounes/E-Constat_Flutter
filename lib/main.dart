@@ -1,7 +1,9 @@
 import 'package:dpc_flutter/Pages/Add_Car.dart';
-import 'package:dpc_flutter/Pages/Home_Page.dart';
+import 'package:dpc_flutter/Pages/CarDmageB.dart';
 import 'package:dpc_flutter/Pages/menu.dart';
 import 'package:flutter/material.dart';
+import 'Pages/CarDamageA.dart';
+import 'Pages/Scanqr.dart';
 import 'Pages/login_page.dart';
 import 'Pages/Settings_Page.dart';
 
@@ -10,7 +12,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-       bool _iconBool = false;
+  bool _iconBool = false;
 
   MyApp({super.key});
 
@@ -20,10 +22,13 @@ class MyApp extends StatelessWidget {
     print(_iconBool);
     return MaterialApp(
       routes: {
-        "/": (context) =>  LoginPage(),
-        "/menu": (context) =>  Menu(index:0),
+        "/": (context) => LoginPage(),
+        "/menu": (context) => const Menu(index: 0),
         "/addCar": (context) => const AddCar(),
-       
+        '/CarDamageA': (context) => CarDamageA(),
+        '/CarDamageB': (context) => CarDamageB(),
+        '/scanqr': (context) => ScanScreen(),
+
       },
       initialRoute: "/",
       theme: _iconBool ? _darktheme : _lighttheme,

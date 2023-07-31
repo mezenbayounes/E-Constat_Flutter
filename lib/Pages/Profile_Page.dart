@@ -1,3 +1,4 @@
+import 'package:dpc_flutter/Pages/Change_Password.dart';
 import 'package:dpc_flutter/Pages/Home_Page.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -25,14 +26,18 @@ class _Profile_PageState extends State<Profile_Page> {
   String address = "";
   String emailProfile = "";
   String driverLicense = "";
+  String delivredOn = "";
+
   String? numberUpdate;
   String? usernameUpdate;
   String? fullNameUpdate;
   String? addressUpdate;
   String? emailProfileUpdate;
   String? driverLicenseUpdate;
+  String? delivredOnUpdate;
+
   bool update = false;
-  DateTime? dateDelevredOn;
+  String? dateDelevredOn;
   String? datecarte;
   TextEditingController _date = TextEditingController();
   final formKey = GlobalKey<FormState>();
@@ -49,8 +54,10 @@ class _Profile_PageState extends State<Profile_Page> {
       address = (prefs.getString('address') ?? '');
       emailProfile = (prefs.getString('emailProfile') ?? '');
       driverLicense = (prefs.getString('driverLicense') ?? '');
-      token = (prefs.getString('token') ?? '');
+      delivredOn = (prefs.getString('deliveredOn') ?? '');
 
+      token = (prefs.getString('token') ?? '');
+      _date.text = delivredOn;
       final parts = token.split('.');
       if (parts.length >= 2) {
         final payload = parts[1];
@@ -69,6 +76,8 @@ class _Profile_PageState extends State<Profile_Page> {
 //////////////
     super.initState();
     _loadCounter();
+    _date.text = delivredOn;
+    print(delivredOn);
   }
 
   @override
@@ -81,7 +90,8 @@ class _Profile_PageState extends State<Profile_Page> {
           key: formKey,
           child: Column(
             children: [
-              SizedBox(height: 30),
+              SizedBox(height: 20),
+
               Image.asset(
                 'lib/images/defpdp.png',
                 height: 200,
@@ -260,8 +270,53 @@ class _Profile_PageState extends State<Profile_Page> {
                       }
                     }),
               ),
-
+              SizedBox(
+                height: 10,
+              ),
               //////////////textfiled delevredOn
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 50.0),
+                child: TextFormField(
+                    controller: _date,
+                    enabled: update,
+                    decoration: InputDecoration(
+                      enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.grey.shade400),
+                          borderRadius: BorderRadius.circular(15.0)),
+                      labelText: 'Delevred On',
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(color: Colors.grey.shade400),
+                      ),
+                      fillColor: Colors.grey.shade100,
+                      filled: true,
+                      hintStyle: TextStyle(color: Colors.grey[350]),
+                      prefixIcon: Icon(Icons.calendar_month_rounded),
+                    ),
+                    onTap: () async {
+                      DateTime? pickerdate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2101));
+                      if (pickerdate != null) {
+                        setState(() {
+                          _date.text =
+                              DateFormat('yyyy-MM-dd').format(pickerdate);
+                          datecarte = pickerdate.toIso8601String();
+                        });
+                      }
+                    },
+                    onSaved: (String? value) {
+                      delivredOnUpdate = datecarte;
+                    },
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Please enter your Driver Licence Date";
+                      } else {
+                        return null;
+                      }
+                    }),
+              ),
 
               SizedBox(height: 10),
               //////////////::textfiled number
@@ -312,6 +367,7 @@ class _Profile_PageState extends State<Profile_Page> {
                       ),
                       child: TextButton(
                         onPressed: () {
+                          print(datecarte);
                           if (formKey.currentState!.validate()) {
                             formKey.currentState!.save();
                             Map<String, dynamic> reqBody = {
@@ -319,10 +375,11 @@ class _Profile_PageState extends State<Profile_Page> {
                               "fullName": fullNameUpdate,
                               "email": emailProfileUpdate,
                               "address": addressUpdate,
+                              "deliveredOn": delivredOnUpdate,
                               "driverLicense": driverLicenseUpdate,
                               "number": number
                             };
-                            print(fullNameUpdate);
+                            //print(delivredOnUpdate);
                             Map<String, String> headers = {
                               "Authorization": "Bearer $token",
                               "Content-Type": "application/json"
@@ -340,7 +397,13 @@ class _Profile_PageState extends State<Profile_Page> {
                                       headers: headers)
                                   .then((http.Response response) async {
                                 if (response.statusCode == 200) {
-                                  update = false;
+                                  setState(() {
+                                    if (update == false) {
+                                      update = true;
+                                    } else {
+                                      update = false;
+                                    }
+                                  });
                                   showDialog(
                                     context: context,
                                     builder: (BuildContext context) {
@@ -386,6 +449,7 @@ class _Profile_PageState extends State<Profile_Page> {
                                       );
                                     },
                                   );
+                                  update = false;
                                 } else {
                                   showDialog(
                                     context: context,
@@ -489,7 +553,8 @@ class _Profile_PageState extends State<Profile_Page> {
                           width: 150, // Adjust the width as needed
                           padding: EdgeInsets.symmetric(horizontal: 30),
                           decoration: BoxDecoration(
-                            color: Color.fromARGB(255, 30, 170, 2),
+                            color: Color.fromARGB(100, 30, 170,
+                                2), // Reduced opacity to make it semi-transparent
                             borderRadius: BorderRadius.circular(25),
                           ),
                           child: const Center(
@@ -550,6 +615,21 @@ class _Profile_PageState extends State<Profile_Page> {
                     ),
                   ),
                 ],
+              ),
+              GestureDetector(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ChangePassword()),
+                ), // Navigate to SignUpPage
+                child: const Padding(
+                  padding: EdgeInsets.all(30),
+                  child: Text(
+                    'Change Password 🔒 ',
+                    style: TextStyle(
+                        color: Color.fromARGB(255, 133, 128, 128),
+                        fontSize: 16),
+                  ),
+                ),
               ),
 
               SizedBox(height: 60),

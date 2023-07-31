@@ -298,7 +298,7 @@ class _SignUpState extends State<SignUp> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 25.0),
                 child: TextFormField(
-                    keyboardType: TextInputType.datetime,
+                    keyboardType: TextInputType.number,
                     decoration: InputDecoration(
                       enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(color: Colors.grey.shade400),

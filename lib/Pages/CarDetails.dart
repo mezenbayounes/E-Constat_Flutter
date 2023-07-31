@@ -5,11 +5,9 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:jaguar_jwt/jaguar_jwt.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../Pages/CarItem.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import '../constant/utils.dart' as utils;
 import '../modles/Car.dart';
-import '../modles/Insurance.dart';
 
 class CarDetails extends StatefulWidget {
   final Car car;
@@ -34,6 +32,8 @@ class _CarDetailsState extends State<CarDetails> {
   TextEditingController _dateTo = TextEditingController();
   String? validityTo;
   String? dateTo;
+  bool visibleImageCar = true;
+  bool visibleQrCode = false;
 
   final formKey = GlobalKey<FormState>();
 
@@ -808,34 +808,52 @@ class _CarDetailsState extends State<CarDetails> {
                       SizedBox(
                         height: 20,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          right: 268,
-                          top: 40,
-                        ),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 6, 142, 205),
-                            border: Border.all(
-                              color: Color.fromARGB(222, 249, 170, 34),
-                              width: 2,
+                      Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              right: 23,
+                              top: 40,
                             ),
-                            borderRadius: const BorderRadius.only(
-                              topRight: Radius.circular(50.0),
-                              bottomRight: Radius.circular(50.0),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 6, 142, 205),
+                                border: Border.all(
+                                  color: Color.fromARGB(222, 249, 170, 34),
+                                  width: 2,
+                                ),
+                                borderRadius: const BorderRadius.only(
+                                  topRight: Radius.circular(50.0),
+                                  bottomRight: Radius.circular(50.0),
+                                ),
+                              ),
+                              child: const Padding(
+                                padding: EdgeInsets.all(8.0),
+                                child: Text(
+                                  'Car Details',
+                                  style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 25.0,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
                             ),
                           ),
-                          child: const Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Text(
-                              'Car Details',
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 25.0,
-                                  fontWeight: FontWeight.bold),
+                          Padding(
+                            padding: EdgeInsets.only(
+                                left: MediaQuery.of(context).size.width * 0.43,
+                                top: 30),
+                            child: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  visibleImageCar = !visibleImageCar;
+                                  visibleQrCode = !visibleQrCode;
+                                });
+                              },
+                              icon: Icon(Icons.qr_code_outlined, size: 40),
                             ),
-                          ),
-                        ),
+                          )
+                        ],
                       ),
                       SizedBox(
                         height: 20,
@@ -885,12 +903,32 @@ class _CarDetailsState extends State<CarDetails> {
                           thickness: 3,
                         ),
                       ),
-                      Center(
-                        child: Image.asset(
-                          "lib/images/${widget.car.carBrand}.png",
-                          height: 200,
-                          width: 300,
-                        ),
+                      Column(
+                        children: [
+                          Visibility(
+                            visible: visibleImageCar,
+                            child: Center(
+                              child: Image.asset(
+                                "lib/images/${widget.car.carBrand}.png",
+                                height: 200,
+                                width: 300,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Visibility(
+                            visible: visibleQrCode,
+                            child: QrImageView(
+                              data: '${widget.car.carId}-${token}',
+                              version: QrVersions.auto,
+                              size: 200,
+                              gapless: false,
+                            ),
+                          ),
+                        ],
                       ),
                       const Padding(
                         padding: const EdgeInsets.only(left: 0.0, right: 0),

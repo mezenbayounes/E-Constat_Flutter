@@ -381,7 +381,7 @@ class _VerifyFromLoginState extends State<VerifyFromLogin> {
                                               Padding(
                                                 padding: EdgeInsets.all(16.0),
                                                 child: Text(
-                                                  "Verification ",
+                                                  "Sending ",
                                                   style: TextStyle(
                                                     fontSize: 20.0,
                                                     fontWeight: FontWeight.bold,

@@ -6,6 +6,7 @@ import 'package:dpc_flutter/Pages/verifyFromLogin.dart';
 import 'package:dpc_flutter/constant/utils.dart' as utils;
 import 'package:flutter/material.dart';
 import 'package:dpc_flutter/components/My_Box.dart';
+import 'package:intl/intl.dart';
 import 'package:jaguar_jwt/jaguar_jwt.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -56,7 +57,7 @@ class _LoginPageState extends State<LoginPage> {
   late String fullName = "a";
   late String address = "a";
   late String driverLicense = "a";
-  //late DateTime delevredOn;
+  late int delevredOn;
   late int number;
   late String emailProfile = "a";
 
@@ -273,8 +274,16 @@ class _LoginPageState extends State<LoginPage> {
                                               resultProfile["driverLicense"];
                                           number = resultProfile["number"];
                                           emailProfile = resultProfile["email"];
-                                          //delevredOn = resultProfile["deliveredOn"];
-                                          saveData("token", tokenToString.toString());
+                                          delevredOn =
+                                              resultProfile["deliveredOn"];
+                                          DateTime dateDelevredOn = DateTime
+                                              .fromMillisecondsSinceEpoch(
+                                                  delevredOn);
+                                          String dateStringDelevredOn =
+                                              DateFormat('yyyy-MM-dd')
+                                                  .format(dateDelevredOn);
+                                          saveData("token",
+                                              tokenToString.toString());
                                           saveData("userId", userId.toString());
                                           saveData(
                                               "username", username.toString());
@@ -287,12 +296,13 @@ class _LoginPageState extends State<LoginPage> {
                                           saveData("number", number.toString());
                                           saveData("emailProfile",
                                               emailProfile.toString());
-                                          //saveData("deliveredOn",delevredOn.toString());
+                                          saveData("deliveredOn",
+                                              dateStringDelevredOn.toString());
                                           SharedPreferences prefs =
                                               await SharedPreferences
                                                   .getInstance();
                                           String? value =
-                                              prefs.getString("userId");
+                                              prefs.getString("deliveredOn");
                                           print(value);
                                         } else {
                                           print("ereeeeeeeeeeeeeeeeeer");
