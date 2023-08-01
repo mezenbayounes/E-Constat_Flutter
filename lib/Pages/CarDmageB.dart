@@ -40,7 +40,13 @@ class _CarDamageBState extends State<CarDamageB> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       token = (prefs.getString('token') ?? '');
+      topleftbool = false;
     });
+  }
+
+  void saveData(String key, String value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString(key, value);
   }
 
   @override
@@ -51,7 +57,7 @@ class _CarDamageBState extends State<CarDamageB> {
   }
 
   void accidant(BuildContext context) {
-    Navigator.pushNamed(context, '/scanqr');
+    Navigator.pushNamed(context, '/chooseDamageCar');
   }
 
   @override
@@ -90,7 +96,7 @@ class _CarDamageBState extends State<CarDamageB> {
                     topleft = 'shield';
                     topleftbool = false;
                   }
-                  print("topleft: $topleftbool");
+                  saveData("topleftboolB", topleftbool.toString());
                 });
               },
               child: Padding(
@@ -112,7 +118,8 @@ class _CarDamageBState extends State<CarDamageB> {
                     topright = 'shield';
                     toprightbool = false;
                   }
-                  print("topright: $toprightbool");
+
+                  saveData("toprightboolB", toprightbool.toString());
                 });
               },
               child: Padding(
@@ -135,7 +142,8 @@ class _CarDamageBState extends State<CarDamageB> {
                     middleleft = 'shield';
                     middleleftbool = false;
                   }
-                  print("middle left: $middleleftbool");
+
+                  saveData("middleleftboolB", middleleftbool.toString());
                 });
               },
               child: Padding(
@@ -157,7 +165,8 @@ class _CarDamageBState extends State<CarDamageB> {
                     middleright = 'shield';
                     middlerightbool = false;
                   }
-                  print("middle right: $middlerightbool");
+
+                  saveData("middlerightboolB", middlerightbool.toString());
                 });
               },
               child: Padding(
@@ -180,7 +189,8 @@ class _CarDamageBState extends State<CarDamageB> {
                     bottomleft = 'shield';
                     bottomleftbool = false;
                   }
-                  print("bottom left: $bottomleftbool");
+
+                  saveData("bottomleftboolB", bottomleftbool.toString());
                 });
               },
               child: Padding(
@@ -202,7 +212,8 @@ class _CarDamageBState extends State<CarDamageB> {
                     bottomright = 'shield';
                     bottomrightbool = false;
                   }
-                  print("bottom left: $bottomrightbool");
+
+                  saveData("bottomrightboolB", bottomrightbool.toString());
                 });
               },
               child: Padding(

@@ -20,7 +20,8 @@ class CarDetails extends StatefulWidget {
 class _CarDetailsState extends State<CarDetails> {
   String token = "";
   String insuranceName = "";
-  String insuranceId = "";
+
+  late int insuranceId;
 
   String userId = "";
   String dataUser = "";
@@ -76,7 +77,9 @@ class _CarDetailsState extends State<CarDetails> {
         await http.get(uriGetInsurance, headers: headers);
     Map<String, dynamic> resultInsurance = json.decode(responseInsurance.body);
     insuranceName = resultInsurance["name"];
-    print(' testtttttttt $insuranceName');
+
+    insuranceId = resultInsurance["insuranceId"];
+    print(' testtttttttt $insuranceId');
 
     /* Uri uri = Uri.http(utils.baseUrlWithoutHttp, "/insurance/$insuranceId");
 
@@ -922,7 +925,7 @@ class _CarDetailsState extends State<CarDetails> {
                           Visibility(
                             visible: visibleQrCode,
                             child: QrImageView(
-                              data: '${widget.car.carId}-${token}',
+                              data: '${widget.car.carId}-${insuranceId}-${userId}',
                               version: QrVersions.auto,
                               size: 200,
                               gapless: false,

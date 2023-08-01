@@ -95,7 +95,7 @@ class _VerifyState extends State<Verify> {
                             fillColor: Colors.grey.shade100,
                             filled: true,
                             hintStyle: TextStyle(color: Colors.grey[350]),
-                            prefixIcon: Icon(Icons.lock ),
+                            prefixIcon: Icon(Icons.lock),
                           ),
                           onSaved: (String? value) {
                             otp = value!;
@@ -109,7 +109,7 @@ class _VerifyState extends State<Verify> {
                           }),
                     ),
                     //user pwd text filed
-                    const SizedBox(height: 100),
+                    const SizedBox(height: 80),
 
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 60),

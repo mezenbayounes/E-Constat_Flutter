@@ -316,7 +316,7 @@ class _SettingsPageState extends State<SettingsPage> {
               )
             ],
           ),
-          SizedBox(height: 290),
+          SizedBox(height: 250),
           Divider(
             color: Colors.grey[300],
             height: 0,
